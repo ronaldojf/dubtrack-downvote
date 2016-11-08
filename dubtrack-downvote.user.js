@@ -11,14 +11,24 @@
 // @version      1.0.0
 // @description  Automatically "downdub" (downvote) tracks after a few seconds.
 // @author       Ronaldo Fuzinato
-// @site         https://github.com/patricknelson/dubtrack-downvote/
+// @site         https://github.com/ronaldojf/dubtrack-downvote/
 // @match        *://dubtrack.fm/*
 // @match        *://www.dubtrack.fm/*
 // @grant        unsafeWindow
 // @updateURL    https://github.com/ronaldojf/dubtrack-downvote/raw/master/dubtrack-downvote.user.js
 // ==/UserScript==
 
-(function(Dubtrack) {
+(function($, console, Dubtrack) {
   'use strict';
-  Dubtrack.Events.bind('realtime:room_playlist-update', Dubtrack.playerController.vote.bind(Dubtrack.playerController, 'updub'));
-})(unsafeWindow.Dubtrack);
+
+  $(function() {
+    /**
+     * AUTO DOWNDUB/DOWNVOTE
+     */
+    setInterval(function() {
+      // Don't do anything if a vote has already been case (i.e. if this song is upvoted as well).
+      if ($(".voted").length === 0) $(".dubdown").click();
+    }, 5000);
+  });
+
+})(unsafeWindow.$, unsafeWindow.console, unsafeWindow.Dubtrack);
