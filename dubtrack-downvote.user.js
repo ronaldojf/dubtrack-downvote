@@ -18,17 +18,7 @@
 // @updateURL    https://github.com/ronaldojf/dubtrack-downvote/raw/master/dubtrack-downvote.user.js
 // ==/UserScript==
 
-(function($, console, Dubtrack) {
+(function(Dubtrack) {
   'use strict';
-
-  $(function() {
-    /**
-     * AUTO DOWNDUB/DOWNVOTE
-     */
-    setInterval(function() {
-      // Don't do anything if a vote has already been case (i.e. if this song is upvoted as well).
-      if ($(".voted").length === 0) $(".dubdown").click();
-    }, 5000);
-  });
-
-})(unsafeWindow.$, unsafeWindow.console, unsafeWindow.Dubtrack);
+  Dubtrack.Events.bind('realtime:room_playlist-update', Dubtrack.playerController.vote.bind(Dubtrack.playerController, 'updub'));
+})(unsafeWindow.Dubtrack);
