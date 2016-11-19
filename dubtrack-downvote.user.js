@@ -8,13 +8,13 @@
 // ==UserScript==
 // @name         dubtrack-downvote
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.1.0
 // @description  Automatically "downdub" (downvote) tracks after a few seconds.
 // @author       Ronaldo Fuzinato
 // @site         https://github.com/ronaldojf/dubtrack-downvote/
 // @match        *://dubtrack.fm/*
 // @match        *://www.dubtrack.fm/*
-// @grant        unsafeWindow
+// @grant        none
 // @updateURL    https://github.com/ronaldojf/dubtrack-downvote/raw/master/dubtrack-downvote.user.js
 // ==/UserScript==
 
@@ -22,13 +22,20 @@
   'use strict';
 
   $(function() {
-    /**
-     * AUTO DOWNDUB/DOWNVOTE
-     */
-    setInterval(function() {
-      // Don't do anything if a vote has already been case (i.e. if this song is upvoted as well).
-      if ($(".voted").length === 0) $(".dubdown").click();
-    }, 5000);
+    var downvoteOtherPeople = function() {
+      if (Dubtrack.loggedIn && $(".voted").length === 0) {
+        if (Dubtrack.room.player.activeSong.attributes.user.id === Dubtrack.session.id) {
+          Dubtrack.playerController.vote('updub');
+        } else {
+          Dubtrack.playerController.vote('downdub');
+        }
+      }
+    };
+
+    setTimeout(function() {
+      downvoteOtherPeople();
+      Dubtrack.Events.bind('realtime:room_playlist-update', downvoteOtherPeople);
+    }, 10 * 1000);
   });
 
-})(unsafeWindow.$, unsafeWindow.console, unsafeWindow.Dubtrack);
+})($, console, Dubtrack);
